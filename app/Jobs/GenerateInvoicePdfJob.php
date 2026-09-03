@@ -47,15 +47,15 @@ class GenerateInvoicePdfJob implements ShouldQueue
 
         $htmlPath = storage_path('app/tmp/invoice-'.$this->orderId.'.html');
         $result = file_put_contents($htmlPath, view('invoices.customer', ['order' => $order])->render());
-        if($result === false) { // failed to write
+        if ($result === false) { // failed to write
             $order->invoice_status = InvoiceStatus::Pending;
             $order->save();
-            throw new RuntimeException("Failed to write invoice.");
+            throw new RuntimeException('Failed to write invoice.');
         }
 
         $pdfPath = storage_path('app/invoices/'.$order->invoice_number.'.pdf');
-        $process = Process::run(["wkhtmltopdf", $htmlPath, $pdfPath]); // safer than exec(), provided by laravel
-        if($process->failed()) {
+        $process = Process::run(['wkhtmltopdf', $htmlPath, $pdfPath]); // safer than exec(), provided by laravel
+        if ($process->failed()) {
             $order->invoice_status = InvoiceStatus::Pending;
             $order->save();
             throw new RuntimeException("Failed to convert html to pdf: {$process->errorOutput()}");
@@ -66,13 +66,15 @@ class GenerateInvoicePdfJob implements ShouldQueue
         $order->save();
     }
 
-    public function failed(?Throwable $exception): void { // 
+    public function failed(?Throwable $exception): void //
+    {
         $order = Order::find($this->orderId);
-        if(!$order) {
+        if (! $order) {
             Log::error("Job failed due to the order not being found with id: {$this->orderId}");
+
             return;
         }
-    
+
         Log::error("Job failed for {$this->orderId}: {$exception->getMessage()}");
         $order->invoice_status = InvoiceStatus::Failed;
         $order->save();
