@@ -11,18 +11,16 @@
  * ship working code (not a written list) via a PR against this file.
  */
 
-
 namespace App\Jobs;
 
 use App\Models\Order;
-use ErrorException;
-use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 
 class GenerateInvoicePdfJob implements ShouldQueue
 {
     use Queueable;
+
     protected string $orderId;
 
     /**
@@ -42,10 +40,10 @@ class GenerateInvoicePdfJob implements ShouldQueue
         $order->invoice_status = 'rendering';
         $order->save();
 
-        $htmlPath = storage_path('app/tmp/invoice-' . $this->orderId . '.html');
+        $htmlPath = storage_path('app/tmp/invoice-'.$this->orderId.'.html');
         file_put_contents($htmlPath, view('invoices.customer', ['order' => $order])->render());
 
-        $pdfPath = storage_path('app/invoices/' . $order->invoice_number . '.pdf');
+        $pdfPath = storage_path('app/invoices/'.$order->invoice_number.'.pdf');
         exec("wkhtmltopdf {$htmlPath} {$pdfPath}");
 
         $order->invoice_status = 'ready';

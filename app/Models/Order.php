@@ -13,9 +13,10 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Order extends Model
 {
-    protected function casts() {
+    protected function casts()
+    {
         return [
-            "invoice_status" => InvoiceStatus::class
+            'invoice_status' => InvoiceStatus::class,
         ];
     }
 }
