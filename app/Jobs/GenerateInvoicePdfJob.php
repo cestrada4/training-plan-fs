@@ -21,7 +21,6 @@ use Illuminate\Support\Facades\Process;
 use Log;
 use RuntimeException;
 use Throwable;
-use function PHPUnit\Framework\fileExists;
 
 class GenerateInvoicePdfJob implements ShouldQueue
 {
@@ -46,7 +45,7 @@ class GenerateInvoicePdfJob implements ShouldQueue
         $order->invoice_status = InvoiceStatus::Rendering;
         $order->save();
 
-        $htmlPath = storage_path('app/tmp/invoice-' . $this->orderId . '.html');
+        $htmlPath = storage_path('app/tmp/invoice-'.$this->orderId.'.html');
         $result = file_put_contents($htmlPath, view('invoices.customer', ['order' => $order])->render());
         if ($result === false) { // failed to write
             $order->invoice_status = InvoiceStatus::Pending;
@@ -54,7 +53,7 @@ class GenerateInvoicePdfJob implements ShouldQueue
             throw new RuntimeException('Failed to write invoice.');
         }
 
-        $pdfPath = storage_path('app/invoices/' . $order->invoice_number . '.pdf');
+        $pdfPath = storage_path('app/invoices/'.$order->invoice_number.'.pdf');
         $process = Process::run(['wkhtmltopdf', $htmlPath, $pdfPath]); // safer than exec(), provided by laravel
         @unlink($htmlPath);
         if ($process->failed()) {
@@ -63,10 +62,10 @@ class GenerateInvoicePdfJob implements ShouldQueue
             throw new RuntimeException("Failed to convert html to pdf: {$process->errorOutput()}");
         }
 
-        if(!@file_exists($pdfPath)) {
-            throw new RuntimeException("PDF was not created.");
+        if (! @file_exists($pdfPath)) {
+            throw new RuntimeException('PDF was not created.');
         }
-        
+
         $order->invoice_status = InvoiceStatus::Ready;
         $order->invoice_path = $pdfPath;
         $order->save();
@@ -75,8 +74,9 @@ class GenerateInvoicePdfJob implements ShouldQueue
     public function failed(?Throwable $exception): void //
     {
         $order = Order::find($this->orderId);
-        if (!$order) {
+        if (! $order) {
             Log::error("Job failed due to the order not being found with id: {$this->orderId}");
+
             return;
         }
 
