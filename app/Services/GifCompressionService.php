@@ -14,12 +14,9 @@ use InvalidArgumentException;
  * fresh code, so the exercise is grounded in work he's actually done rather than a generic textbook
  * example.
  */
-
 class GifCompressionService
 {
-    public function __construct(private int $maxWidthPx = 480)
-    {
-    }
+    public function __construct(private int $maxWidthPx = 480) {}
 
     /**
      * Given a raw frame count and a target duration in seconds, compute the frames-per-second
@@ -60,6 +57,7 @@ class GifCompressionService
     public function estimateOutputSizeKb(int $frameCount, int $width, int $height): float
     {
         $bytesPerFrame = $width * $height * 0.03; // rough GIF compression heuristic
+
         return round(($frameCount * $bytesPerFrame) / 1024, 1);
     }
 }
