@@ -35,7 +35,7 @@ class GifCompressionService
      * Given a source width/height, compute the output height that preserves aspect ratio when
      * scaled down to maxWidthPx. Returns the original dimensions unchanged if already narrower
      * than maxWidthPx.
-     * 
+     *
      * @return array{width: int, height: int}
      */
     public function computeScaledDimensions(int $sourceWidth, int $sourceHeight): array
