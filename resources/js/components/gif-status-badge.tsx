@@ -5,7 +5,7 @@
 
 import React from 'react';
 
-interface GifStatusBadgeProps {
+export interface GifStatusBadgeProps {
     status: 'queued' | 'processing' | 'completed' | 'failed';
     onClick?: (status: string) => void;
 }
