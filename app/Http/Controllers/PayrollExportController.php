@@ -19,11 +19,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Employee;
 use App\Models\TimeCard;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class PayrollExportController extends Controller
 {
-    public function exportPeriodTotals(Request $request)
+    public function exportPeriodTotals(Request $request): JsonResponse
     {
         $periodStart = $request->input('period_start');
         $periodEnd = $request->input('period_end');
@@ -36,17 +37,21 @@ class PayrollExportController extends Controller
             ->groupBy('employees.id', 'employees.name')
             ->get();
 
+        /**
+         * @param  Employee  $row
+         * @return array{employee: string, total_hours: float}
+         */
         $rows = $rows->map(function ($row) {
             return [
-                'employee' => $row->employee,
-                'total_hours' => round($row->all_hours, 2),
+                'employee' => (string) $row->getAttribute('employee'),
+                'total_hours' => round((float) $row->getAttribute('all_hours'), 2),
             ];
         });
 
         return response()->json($rows);
     }
 
-    public function exportPeriodTotalsOld(Request $request)
+    public function exportPeriodTotalsOld(Request $request): JsonResponse
     {
         $periodStart = $request->input('period_start');
         $periodEnd = $request->input('period_end');

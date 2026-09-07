@@ -12,6 +12,9 @@ class Employee extends Model
         'status',
     ];
 
+    /**
+     * @return HasMany<TimeCard, $this>
+     */
     public function timeCards(): HasMany
     {
         return $this->hasMany(TimeCard::class);
