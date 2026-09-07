@@ -4,10 +4,9 @@ namespace Tests\Feature;
 
 use App\Models\Employee;
 use App\Models\TimeCard;
-use Illuminate\Foundation\Testing\Attributes\SetUp;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
 
@@ -78,8 +77,7 @@ class PayrollExportControllerTest extends TestCase
             $queries[] = $query->sql;
         });
 
-
-        $response = $this->getJson('/time-cards/export-period-totals?' . http_build_query([
+        $response = $this->getJson('/time-cards/export-period-totals?'.http_build_query([
             'period_start' => $periodStart,
             'period_end' => $periodEnd,
         ]));
@@ -87,7 +85,7 @@ class PayrollExportControllerTest extends TestCase
         $this->runReturnsEmployeeHoursReportAssertions($response, $numberOfEmployees, $expectedTotals, $queries, $expectedQueries);
     }
 
-        public function test_it_returns_employee_hours_report_old(): void
+    public function test_it_returns_employee_hours_report_old(): void
     {
 
         $periodStart = '2026-09-01';
@@ -101,8 +99,7 @@ class PayrollExportControllerTest extends TestCase
             $queries[] = $query->sql;
         });
 
-
-        $response = $this->getJson('/time-cards/export-period-totals-old?' . http_build_query([
+        $response = $this->getJson('/time-cards/export-period-totals-old?'.http_build_query([
             'period_start' => $periodStart,
             'period_end' => $periodEnd,
         ]));

@@ -29,17 +29,17 @@ class PayrollExportController extends Controller
         $periodEnd = $request->input('period_end');
 
         $rows = Employee::query()
-        ->join('time_cards', 'time_cards.employee_id', '=', 'employees.id')
-        ->select('employees.id','employees.name AS employee')
-        ->selectRaw('SUM(time_cards.total_hours) as all_hours')
-        ->whereBetween('date', [$periodStart, $periodEnd])
-        ->groupBy('employees.id','employees.name')
-        ->get();
+            ->join('time_cards', 'time_cards.employee_id', '=', 'employees.id')
+            ->select('employees.id', 'employees.name AS employee')
+            ->selectRaw('SUM(time_cards.total_hours) as all_hours')
+            ->whereBetween('date', [$periodStart, $periodEnd])
+            ->groupBy('employees.id', 'employees.name')
+            ->get();
 
         $rows = $rows->map(function ($row) {
             return [
                 'employee' => $row->employee,
-                'total_hours' => round($row->all_hours, 2)
+                'total_hours' => round($row->all_hours, 2),
             ];
         });
 
