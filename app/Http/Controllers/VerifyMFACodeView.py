@@ -20,10 +20,16 @@ from .models import MFAChallenge
 
 class VerifyMFACodeView(View):
     def post(self, request):
-        user_id = request.POST.get("user_id")
+        if not request.user.is_authenticated:
+            return JsonResponse({"status": "unauthorized"}, status=401)
+
+        user_id = request.user.id
         code = request.POST.get("code")
 
         challenge = MFAChallenge.objects.filter(user_id=user_id).order_by("-created_at").first()
+
+        if challenge is None:
+            return JsonResponse({"status": "invalid"})
 
         if challenge.code == code:
             challenge.verified = True
