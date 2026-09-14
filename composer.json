@@ -67,13 +67,13 @@
         "@test"
         ],
         "types:check": [
-            "phpstan analyse"
+            "@php -d memory_limit=512M vendor/bin/phpstan analyse"
         ],
         "test": [
             "@php artisan config:clear --ansi",
             "@lint:check",
             "@types:check",
-            "@php artisan test"
+            "@php -d pcov.enabled=1 artisan test --coverage --min=80"
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",

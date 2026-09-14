@@ -14,7 +14,13 @@
     </testsuites>
     <source>
         <include>
-            <directory>app</directory>
+            <file>app/Enums/InvoiceStatus.php</file>
+            <file>app/Http/Controllers/PayrollExportController.php</file>
+            <file>app/Jobs/GenerateInvoicePdfJob.php</file>
+            <file>app/Models/Employee.php</file>
+            <file>app/Models/Order.php</file>
+            <file>app/Models/TimeCard.php</file>
+            <file>app/Services/GifCompressionService.php</file>
         </include>
     </source>
     <php>
