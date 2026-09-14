@@ -19,6 +19,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Employee;
 use App\Models\TimeCard;
+use Carbon\Carbon;
+use Closure;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -26,8 +28,27 @@ class PayrollExportController extends Controller
 {
     public function exportPeriodTotals(Request $request): JsonResponse
     {
-        $periodStart = $request->input('period_start');
-        $periodEnd = $request->input('period_end');
+
+        $validated = $request->validate([
+            'period_start' => ['required', 'date'],
+            'period_end' => [
+                'bail',
+                'required',
+                'date',
+                'after_or_equal:period_start',
+                function (string $attr, mixed $periodEnd, Closure $fail) use ($request) {
+                    $periodStart = Carbon::parse($request->input('period_start'));
+                    $periodEnd = Carbon::parse($periodEnd);
+
+                    if ($periodEnd->gt($periodStart->copy()->addYear())) {
+                        $fail('The period may not exceed one year.');
+                    }
+                },
+            ],
+        ]);
+
+        $periodStart = Carbon::parse($validated['period_start']);
+        $periodEnd = Carbon::parse($validated['period_end']);
 
         $rows = Employee::query()
             ->join('time_cards', 'time_cards.employee_id', '=', 'employees.id')

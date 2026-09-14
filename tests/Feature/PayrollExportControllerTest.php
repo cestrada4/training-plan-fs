@@ -60,7 +60,7 @@ class PayrollExportControllerTest extends TestCase
             $this->assertEquals($expectedTotals[$row['employee']], (float) $row['total_hours']);
         }
 
-        $this->assertCount(count($queries), $queries);
+        $this->assertCount($expectedQueries, $queries);
     }
 
     public function test_it_returns_employee_hours_report(): void
@@ -105,5 +105,33 @@ class PayrollExportControllerTest extends TestCase
         ]));
 
         $this->runReturnsEmployeeHoursReportAssertions($response, $numberOfEmployees, $expectedTotals, $queries, $expectedQueries);
+    }
+
+    public function test_should_fail_if_period_is_greater_than_1_year(): void
+    {
+        $periodStart = '2026-01-01';
+        $periodEnd = '2027-01-02';
+
+        $response = $this->getJson('/time-cards/export-period-totals?'.http_build_query([
+            'period_start' => $periodStart,
+            'period_end' => $periodEnd,
+        ]));
+
+        $response->assertUnprocessable()
+            ->assertInvalid('period_end');
+    }
+
+    public function test_should_fail_if_period_end_is_lte_period_start(): void
+    {
+        $periodStart = '2026-01-02';
+        $periodEnd = '2026-01-01';
+
+        $response = $this->getJson('/time-cards/export-period-totals?'.http_build_query([
+            'period_start' => $periodStart,
+            'period_end' => $periodEnd,
+        ]));
+
+        $response->assertUnprocessable()
+            ->assertInvalid('period_end');
     }
 }
