@@ -55,10 +55,15 @@ class GenerateInvoicePdfJob implements ShouldQueue
 
         $pdfPath = storage_path('app/invoices/'.$order->invoice_number.'.pdf');
         $process = Process::run(['wkhtmltopdf', $htmlPath, $pdfPath]); // safer than exec(), provided by laravel
+        @unlink($htmlPath);
         if ($process->failed()) {
             $order->invoice_status = InvoiceStatus::Pending;
             $order->save();
             throw new RuntimeException("Failed to convert html to pdf: {$process->errorOutput()}");
+        }
+
+        if (! @file_exists($pdfPath)) {
+            throw new RuntimeException('PDF was not created.');
         }
 
         $order->invoice_status = InvoiceStatus::Ready;
