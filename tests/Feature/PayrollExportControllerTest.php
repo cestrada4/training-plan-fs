@@ -121,7 +121,7 @@ class PayrollExportControllerTest extends TestCase
             ->assertInvalid('period_end');
     }
 
-        public function test_should_fail_if_period_end_is_lte_period_start(): void
+    public function test_should_fail_if_period_end_is_lte_period_start(): void
     {
         $periodStart = '2026-01-02';
         $periodEnd = '2026-01-01';
